@@ -10,4 +10,8 @@ query = '''SELECT tot.pts / tot.gp as ppg, ply.full_name as player
     WHERE tot.season_id = '2019-20'
     ORDER BY ppg DESC LIMIT 10;'''
 res = requests.get('https://www.dolthub.com/api/v1alpha1/{}/{}/{}'.format(owner, repo, branch), params={'q': query})
+print(res) #504
+
+query = "SELECT id FROM `players` where last_name='Harden'"
+res = requests.get('http://www.dolthub.com/api/v1alpha1/{}/{}'.format(owner, repo), params={'q': query})
 print(res)
