@@ -25,7 +25,7 @@ jobs:
       - uses: actions/checkout@v3
       
       - name: Dolt Import
-        uses: dolthub/dolt-action@v1
+        uses: dolthub/dolt-action@v0.16
         id: 'dolt_import'
         with:
           remote: hzuika/Test
