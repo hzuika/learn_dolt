@@ -32,8 +32,13 @@ jobs:
           dolt config --global --add user.email ${{secrets.DOLT_USER_EMAIL}}
           dolt config --global --add user.name ${{secrets.DOLT_USER_NAME}}
           dolt config --global --add user.creds ${{secrets.DOLT_USER_CREDS}}
+
+      - name: Make private creds
+        env:
+          JSON_DECODE: ${{ secrets.DOLT_USER_CREDS_FILE }}
+        run: 
           mkdir -p ~/.dolt/creds/
-          echo -n ${{secrets.DOLT_USER_CREDS_FILE}} | base64 --decode > ~/.dolt/creds/${{secrets.DOLT_USER_CREDS}}.jwk
+          echo -n $JSON_DECODE | base64 --decode > ~/.dolt/creds/${{secrets.DOLT_USER_CREDS}}.jwk
           dolt login ${{secrets.DOLT_CREDENTIAL}}
         
       # Runs a set of commands using the runners shell
