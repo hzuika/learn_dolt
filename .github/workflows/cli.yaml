@@ -38,6 +38,10 @@ jobs:
           JSON_DECODE: ${{ secrets.DOLT_USER_CREDS_FILE }}
         run: |
           mkdir -p ~/.dolt/creds/
+          echo -n $JSON_DECODE
+          echo -n $JSON_DECODE > ~/.dolt/creds/encode.txt
+          base64 ~/.dolt/creds/encode.txt
+          echo -n $JSON_DECODE | base64 --decode
           echo -n $JSON_DECODE | base64 --decode > ~/.dolt/creds/${{secrets.DOLT_USER_CREDS}}.jwk
           dolt login ${{secrets.DOLT_CREDENTIAL}}
         
