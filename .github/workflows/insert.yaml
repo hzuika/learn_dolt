@@ -34,3 +34,5 @@ jobs:
           dolt clone hzuika/Test
           echo test, and deploy your project.
           dolt sql -q "show databases;"
+          dolt sql -q "INSERT INTO Table_A VALUES ('title actions', 'name actions')";
+          dolt sql -q "select * from Table_A"
