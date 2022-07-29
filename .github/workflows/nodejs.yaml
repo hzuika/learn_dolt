@@ -25,4 +25,4 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - run: |
           npm install axios
-          node index.mjs
+          node test_dolt_api.js
