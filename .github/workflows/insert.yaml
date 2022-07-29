@@ -33,6 +33,12 @@ jobs:
         run: |
           dolt clone hzuika/Test
           echo test, and deploy your project.
+
+          dolt config --global --add user.email 39191601+hzuika@users.noreply.github.com
+          dolt config --global --add user.name hzuika
           dolt sql -q "show databases;"
           dolt sql -q "INSERT INTO Table_A VALUES ('title actions', 'name actions')";
           dolt sql -q "select * from Table_A"
+          dolt add .
+          dolt commit -m "from actions"
+          dolt branch
