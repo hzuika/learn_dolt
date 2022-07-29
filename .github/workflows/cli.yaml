@@ -33,7 +33,7 @@ jobs:
           # dolt config --global --add user.name ${{secrets.DOLT_USER_NAME}}
           # dolt config --global --add user.creds ${{secrets.DOLT_USER_CREDS}}
           dolt creds new
-          cat $(ls ~/.dolt/creds/)
+          cat $(ls ~/.dolt/creds/*)
           # mkdir -p ~/.dolt/creds/
           # echo "${{secrets.DOLT_USER_CREDS_FILE}}" > ~/.dolt/creds/${{secrets.DOLT_USER_CREDS}}.jwk
           # dolt login ${{secrets.DOLT_USER_CREDS}}
