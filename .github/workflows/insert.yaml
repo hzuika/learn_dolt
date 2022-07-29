@@ -43,3 +43,4 @@ jobs:
           dolt add .
           dolt commit -m "from actions"
           dolt branch
+          dolt push origin main
