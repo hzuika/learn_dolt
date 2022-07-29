@@ -33,7 +33,7 @@ jobs:
           dolt config --global --add user.name ${{secrets.DOLT_USER_NAME}}
           dolt config --global --add user.creds ${{secrets.DOLT_USER_CREDS}}
           mkdir -p ~/.dolt/creds/
-          echo-n ${{secrets.DOLT_USER_CREDS_FILE}} | base64 --decode > ~/.dolt/creds/${{secrets.DOLT_USER_CREDS}}.jwk
+          echo -n ${{secrets.DOLT_USER_CREDS_FILE}} | base64 --decode > ~/.dolt/creds/${{secrets.DOLT_USER_CREDS}}.jwk
           dolt login ${{secrets.DOLT_CREDENTIAL}}
         
       # Runs a set of commands using the runners shell
