@@ -29,10 +29,6 @@ jobs:
         run: sudo bash -c 'curl -L https://github.com/dolthub/dolt/releases/latest/download/install.sh | bash'
         
       - name: Login dolt
-        env: |
-          NAME: ${{secrets.DOLT_USER_NAME}}
-          EMAIL: ${{secrets.DOLT_USER_EMAIL}}
-          CREDS: ${{secrets.DOLT_USER_CREDS}}
         run: | 
           dolt config --global --add user.email ${{secrets.DOLT_USER_EMAIL}}
           dolt config --global --add user.name ${{secrets.DOLT_USER_NAME}}
