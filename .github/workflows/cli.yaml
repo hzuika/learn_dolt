@@ -36,7 +36,7 @@ jobs:
       - name: Make private creds
         env:
           JSON_DECODE: ${{ secrets.DOLT_USER_CREDS_FILE }}
-        run: 
+        run: |
           mkdir -p ~/.dolt/creds/
           echo -n $JSON_DECODE | base64 --decode > ~/.dolt/creds/${{secrets.DOLT_USER_CREDS}}.jwk
           dolt login ${{secrets.DOLT_CREDENTIAL}}
