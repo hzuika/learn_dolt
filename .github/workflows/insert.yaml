@@ -33,3 +33,4 @@ jobs:
         run: |
           dolt clone hzuika/Test
           echo test, and deploy your project.
+          dolt sql -q "show databases;"
