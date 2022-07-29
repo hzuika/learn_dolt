@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-branch = 'james-harden-basket-counts'
-query = 'SELECT committer, message FROM dolt_log'
-res = await axios.get(`https://www.dolthub.com/api/v1alpha1/${owner}/${repo}/${branch}`, params:{q: query})
+owner, repo, branch = 'dolthub', 'nba-players', 'master'
+query = "SELECT id FROM `players` where last_name='Harden'"
+res = await axios.get(`https://www.dolthub.com/api/v1alpha1/${owner}/${repo}`, {params:{q: query}})
 console.log(res)
