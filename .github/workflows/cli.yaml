@@ -33,7 +33,7 @@ jobs:
           dolt config --global --add user.name ${{secrets.DOLT_USER_NAME}}
           dolt config --global --add user.creds ${{secrets.DOLT_USER_CREDS}}
 
-      - name: Make private creds
+      - name: Make private creds(Decode base64)
         env:
           JSON_DECODE: ${{ secrets.DOLT_USER_CREDS_FILE }}
         run: |
