@@ -32,6 +32,7 @@ jobs:
       - name: Run a multi-line script
         run: |
           dolt clone hzuika/Test
+          cd Test
           echo test, and deploy your project.
 
           dolt config --global --add user.email 39191601+hzuika@users.noreply.github.com
