@@ -43,4 +43,5 @@ jobs:
           dolt add .
           dolt commit -m "from actions"
           dolt branch
+          dolt login ${{secrets.DOLT_CREDENTIAL}}
           dolt push origin main
