@@ -31,15 +31,10 @@ jobs:
         run: | 
           dolt config --global --add user.email ${{secrets.DOLT_USER_EMAIL}}
           dolt config --global --add user.name ${{secrets.DOLT_USER_NAME}}
-          # dolt config --global --add user.creds ${{secrets.DOLT_USER_CREDS}}
-          # dolt creds new
-          dolt config --global --add user.creds j2mn4kt3263mr6ba0rcs006aae9jl84hs5jem70kpjjqg
+          dolt config --global --add user.creds ${{secrets.DOLT_USER_CREDS}}
           mkdir -p ~/.dolt/creds/
-          # echo "${{secrets.DOLT_USER_CREDS_FILE}}" > ~/.dolt/creds/${{secrets.DOLT_USER_CREDS}}.jwk
-          echo '{"d":"-Q2Uv01qYb0CXrJi_R3aOti7EjJ8tFAPAlOLNZZ_Lbc=","x":"h6MGUYJN2RF_EGbwu0mfCZfr2Vuqwe5x8l1pXEyErN_5DZS_TWphvQJesmL9Hdo62LsSMny0UA8CU4s1ln8ttw==","kty":"OKP","crv":"Ed25519"}' > ~/.dolt/creds/j2mn4kt3263mr6ba0rcs006aae9jl84hs5jem70kpjjqg.jwk
-          cat $(ls ~/.dolt/creds/*)
-          # dolt login ${{secrets.DOLT_CREDENTIAL}}
-          dolt login v46p9fqdd9grq0ium9hfq7eq7bcbm4hifiq503o2ae5jb5jv5mrg
+          echo "${{secrets.DOLT_USER_CREDS_FILE}}" > ~/.dolt/creds/${{secrets.DOLT_USER_CREDS}}.jwk
+          dolt login ${{secrets.DOLT_CREDENTIAL}}
         
       # Runs a set of commands using the runners shell
       - name: Run a multi-line script
