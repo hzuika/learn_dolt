@@ -1,5 +1,9 @@
 import axios from 'axios'
 
+const getChannelApiDataFromChannelId = (channelId) => {
+  // pass
+}
+
 //const axios = require('axios').default;
 
 let owner = 'dolthub'
@@ -20,5 +24,6 @@ query = "SELECT * FROM channel"
 axios.get(`${url}/${owner}/${repo}`, {params:{q: query}}).then(res => {
   res.data.rows.map(data => {
     console.log(data.id);
+    const apiData = getChannelApiDataFromChannelId(data.id);
   });
 });
