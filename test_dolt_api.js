@@ -19,4 +19,4 @@ repo = 'dotlive_video'
 query = "SELECT * FROM channel"
 axios.get(`${url}/${owner}/${repo}`, {params:{q: query}}).then(res => {
   console.log(res)
-}
+});
