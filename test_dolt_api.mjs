@@ -1,6 +1,6 @@
-//import axios from 'axios'
+import axios from 'axios'
 
-const axios = require('axios').default;
+//const axios = require('axios').default;
 
 let owner = 'dolthub'
 let repo = 'nba-players'
