@@ -11,7 +11,7 @@ let query = "SELECT id FROM `players` where last_name='Harden'"
 
 const url = "https://www.dolthub.com/api/v1alpha1" 
 axios.get(`https://www.dolthub.com/api/v1alpha1/${owner}/${repo}`, {params:{q: query}}).then((res) => {
-console.log(res)
+//console.log(res)
 })
 
 owner = 'hzuika'
@@ -20,4 +20,5 @@ query = "SELECT * FROM channel"
 axios.get(`${url}/${owner}/${repo}`, {params:{q: query}}).then(res => {
   res.data.rows.map(data => {
     console.log(data.id);
+  });
 });
