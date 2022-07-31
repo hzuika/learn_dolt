@@ -50,11 +50,9 @@ jobs:
           node ./video_to_dolt.js
 
       - name: Commit
+        working-directory: ./dotlive_video
         run: |
-          cd ./dotlive_video
-          dolt sql -q "select * from dothub_video.video;"
-          # dolt add .
-          # dolt commit -m "from actions"
-          # dolt branch
-          # dolt push origin main
+          dolt add .
+          dolt commit -m "from actions"
+          dolt push origin main
 
