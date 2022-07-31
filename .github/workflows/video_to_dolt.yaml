@@ -32,18 +32,21 @@ jobs:
       
       - working-directory: ./Test
         run: |
+          pwd
           dolt sql-server &
           
       - run: |
           touch .env
           echo "YOUTUBE_API_KEY=${{ secrets.YOUTUBE_API_KEY }}" >> .env
+          
+      - run: mysql --host 127.0.0.1 --port 3306 -uroot -e "show databases;"
 
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
       - run: |
-          npm install
+          npm ci
           node ./video_to_dolt.js
 
       - name: Commit
