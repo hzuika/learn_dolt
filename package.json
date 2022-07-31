@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "dotenv": "^16.0.1",
+    "hzkl": "github:hzuika/hzklnodejs",
+    "mysql2": "^2.3.3"
+  }
+}

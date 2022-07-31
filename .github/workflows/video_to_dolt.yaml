@@ -1,0 +1,53 @@
+name: DoltCli
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install dolt
+        run: sudo bash -c 'curl -L https://github.com/dolthub/dolt/releases/latest/download/install.sh | bash'
+        
+      - name: Login dolt
+        run: | 
+          dolt config --global --add user.email ${{secrets.DOLT_USER_EMAIL}}
+          dolt config --global --add user.name ${{secrets.DOLT_USER_NAME}}
+          dolt config --global --add user.creds ${{secrets.DOLT_USER_CREDS}}
+
+      - name: Make private creds(Decode base64)
+        env:
+          JSON_DECODE: ${{ secrets.DOLT_USER_CREDS_FILE }}
+        run: |
+          mkdir -p ~/.dolt/creds/
+          echo $JSON_DECODE > ~/.dolt/creds/encode.txt
+          base64 --decode ~/.dolt/creds/encode.txt > ~/.dolt/creds/${{secrets.DOLT_USER_CREDS}}.jwk
+          dolt login ${{secrets.DOLT_CREDENTIAL}}
+          
+      - run: dolt clone hzuika/Test
+      
+      - working-directory: ./Test
+        run: |
+          dolt sql-server &
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: |
+          npm install
+          node ./video_to_dolt.js
+
+      - name: Commit
+        run: |
+          cd Test
+          dolt sql -q "select * from dothub_video.video;"
+          # dolt add .
+          # dolt commit -m "from actions"
+          # dolt branch
+          # dolt push origin main
+
