@@ -41,11 +41,17 @@ jobs:
           echo $JSON_DECODE > ~/.dolt/creds/encode.txt
           base64 --decode ~/.dolt/creds/encode.txt > ~/.dolt/creds/${{secrets.DOLT_USER_CREDS}}.jwk
           dolt login ${{secrets.DOLT_CREDENTIAL}}
+          
+      - run: dolt clone hzuika/Test
+      
+      - run: |
+          cd Test
+          dolt sql-server &
+
         
       # Runs a set of commands using the runners shell
       - name: Run a multi-line script
         run: |
-          dolt clone hzuika/Test
           cd Test
           echo test, and deploy your project.
           
