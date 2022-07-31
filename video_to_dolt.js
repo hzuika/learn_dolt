@@ -16,6 +16,24 @@ const mysql = require("mysql2/promise");
     (data) => data.id
   );
 
+  await Promise.all(idList.map(id => {
+    const playlistApiDataList = await yt.getPlaylists(id);
+    playlistApiDataList.map(async playlistApiData => {
+      const columnList = ["id", "title", "channelId"]
+      const updateColumnList = columnList.map(
+        (column) => `${column}=values(${column})`
+      );
+      await con.query(
+        `INSERT INTO playlist (${columnList.join(",")}) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE ${updateColumnList.join(",")}`,
+        [
+          Youtube.getPlaylistIdFromPlaylistApiData(playlistApiData),
+          Youtube.getTitleFromPlaylistApiData(playlistApiData),
+          Youtube.getChannelIdFromPlaylistApiData(playlistApiData)
+        ]
+      )
+    })
+  }))
+
   const yt = new Youtube(process.env.YOUTUBE_API_KEY);
 
   const channelApiDataList = await yt.getChannels(idList);
