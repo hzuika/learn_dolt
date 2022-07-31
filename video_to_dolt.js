@@ -32,8 +32,6 @@ const mysql = require("mysql2/promise");
     }))
   }))
 
-  console.log((await con.query("select * from video"))[0])
-
   await con.end();
 })();
 
