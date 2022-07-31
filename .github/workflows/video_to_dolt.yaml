@@ -33,6 +33,10 @@ jobs:
       - working-directory: ./Test
         run: |
           dolt sql-server &
+          
+      - run: |
+          touch .env
+          echo "YOUTUBE_API_KEY=${{ secrets.YOUTUBE_API_KEY }}" >> .env
 
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
