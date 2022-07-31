@@ -9,6 +9,9 @@ const mysql = require("mysql2/promise");
   });
 
   await con.query(`use dotlive_video`);
+  
+  await con.query("CREATE TABLE IF NOT EXISTS playlist (id char(34) not null, title varchar(255), channelId char(24) PRIMARY KEY (id)");
+  
   const idList = (await con.query("SELECT id FROM channel"))[0].map(
     (data) => data.id
   );
