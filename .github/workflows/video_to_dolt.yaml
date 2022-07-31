@@ -52,7 +52,9 @@ jobs:
       - name: Commit
         working-directory: ./dotlive_video
         run: |
-          dolt add .
-          dolt commit -m "from actions"
+          mysql --host 127.0.0.1 --port 3306 -uroot -e "use dotlive_video; select dolt_commit('-a', '-m', 'From github actions');"
+
+          #dolt add .
+          #dolt commit -m "from actions"
           dolt push origin main
 
