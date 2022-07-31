@@ -54,11 +54,11 @@ jobs:
         run: |
           cd Test
           echo test, and deploy your project.
-          
-          dolt sql -q "show databases;"
-          dolt sql -q "INSERT INTO Table_A VALUES ('title actions', 'name actions')";
-          dolt sql -q "select * from Table_A"
-          dolt add .
-          dolt commit -m "from actions"
-          dolt branch
-          dolt push origin main
+          mysql --host 127.0.0.1 --port 3306 -uroot -e "show databases;"
+          #dolt sql -q "show databases;"
+          #dolt sql -q "INSERT INTO Table_A VALUES ('title actions', 'name actions')";
+          #dolt sql -q "select * from Table_A"
+          #dolt add .
+          #dolt commit -m "from actions"
+          #dolt branch
+          #dolt push origin main
