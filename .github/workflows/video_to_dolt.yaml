@@ -28,9 +28,9 @@ jobs:
           base64 --decode ~/.dolt/creds/encode.txt > ~/.dolt/creds/${{secrets.DOLT_USER_CREDS}}.jwk
           dolt login ${{secrets.DOLT_CREDENTIAL}}
           
-      - run: dolt clone hzuika/Test
+      - run: dolt clone hzuika/dotlive_video
       
-      - working-directory: ./Test
+      - working-directory: ./dotlive_video
         run: |
           pwd
           dolt sql-server &
@@ -51,7 +51,7 @@ jobs:
 
       - name: Commit
         run: |
-          cd Test
+          cd ./dotlive_video
           dolt sql -q "select * from dothub_video.video;"
           # dolt add .
           # dolt commit -m "from actions"
