@@ -1,4 +1,4 @@
-name: DoltCli
+name: Youtube Video API Data -> Dolt
 
 on:
   workflow_dispatch:
