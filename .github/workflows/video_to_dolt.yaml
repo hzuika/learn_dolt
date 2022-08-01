@@ -48,7 +48,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - run: |
-          npm ci
+          npm i
           node ./video_to_dolt.js
 
       - name: Commit
