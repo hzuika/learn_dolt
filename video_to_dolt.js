@@ -16,7 +16,7 @@ const mysql = require("mysql2/promise");
     (data) => data.id
   );
 
-  await Promise.all(idList.map(id => {
+  await Promise.all(idList.map(async id => {
     const playlistApiDataList = await yt.getPlaylists(id);
     playlistApiDataList.map(async playlistApiData => {
       const columnList = ["id", "title", "channelId"]
