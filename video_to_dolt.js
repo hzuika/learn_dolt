@@ -1,6 +1,8 @@
 const { Youtube } = require("hzkl");
 require("dotenv").config();
 const mysql = require("mysql2/promise");
+const yt = new Youtube(process.env.YOUTUBE_API_KEY);
+
 (async () => {
   const con = await mysql.createConnection({
     host: "127.0.0.1",
@@ -34,7 +36,6 @@ const mysql = require("mysql2/promise");
     })
   }))
 
-  const yt = new Youtube(process.env.YOUTUBE_API_KEY);
 
   const channelApiDataList = await yt.getChannels(idList);
   await Promise.all(channelApiDataList.map(async (channelApiData) => {
