@@ -30,7 +30,7 @@ const yt = new Youtube(process.env.YOUTUBE_API_KEY);
         [
           Youtube.getPlaylistIdFromPlaylistApiData(playlistApiData),
           Youtube.getTitleFromPlaylistApiData(playlistApiData),
-          Youtube.getChannelIdFromPlaylistApiData(playlistApiData)
+          playlistApiData.snippet.channelId
         ]
       )
     })
