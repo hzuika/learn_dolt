@@ -67,7 +67,7 @@ const yt = new Youtube(process.env.YOUTUBE_API_KEY);
     );
   }));
 
-  console.log(await con.query("select * from channel"))
+  // console.log(await con.query("select * from channel"))
 
   await Promise.all(
     idList.map(async (channelId) => {
@@ -79,6 +79,10 @@ const yt = new Youtube(process.env.YOUTUBE_API_KEY);
       const videoApiDataList = await yt.getVideos(videoIdList);
       await Promise.all(
         videoApiDataList.map(async (videoApiData) => {
+          const description = Youtube.getDescriptioFromVideoApiData(videoApiData);
+          const otherChannelIdList = Youtube.searchChannelIdFromText(description);
+          await con.query("INSERT IGNORE INTO channel (id) VALUES ?", [otherChannelIdList])
+
           const id = Youtube.getVideoIdFromVideoApiData(videoApiData);
           const channelId = Youtube.getChannelIdFromVideoApiData(videoApiData);
           const title = Youtube.getTitleFromVideoApiData(videoApiData);
