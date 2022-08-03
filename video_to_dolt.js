@@ -81,7 +81,9 @@ const yt = new Youtube(process.env.YOUTUBE_API_KEY);
         videoApiDataList.map(async (videoApiData) => {
           const description = Youtube.getDescriptioFromVideoApiData(videoApiData);
           const otherChannelIdList = Youtube.searchChannelIdFromText(description);
-          await con.query("INSERT IGNORE INTO channel (id) VALUES ?", [otherChannelIdList])
+          if (otherChannelIdList.length > 0) {
+              await con.query("INSERT IGNORE INTO channel (id) VALUES ?", [otherChannelIdList]);
+          }
 
           const id = Youtube.getVideoIdFromVideoApiData(videoApiData);
           const channelId = Youtube.getChannelIdFromVideoApiData(videoApiData);
