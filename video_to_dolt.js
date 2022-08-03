@@ -1,4 +1,4 @@
-const { Youtube } = require("hzkl");
+const { Youtube, removeDuplicatesFromArray } = require("hzkl");
 require("dotenv").config();
 const mysql = require("mysql2/promise");
 const yt = new Youtube(process.env.YOUTUBE_API_KEY);
@@ -18,56 +18,9 @@ const yt = new Youtube(process.env.YOUTUBE_API_KEY);
     (data) => data.id
   );
 
-  await Promise.all(idList.map(async id => {
-    const playlistApiDataList = await yt.getPlaylists(id);
-    playlistApiDataList.map(async playlistApiData => {
-      const columnList = ["id", "title", "channelId"]
-      const updateColumnList = columnList.map(
-        (column) => `${column}=values(${column})`
-      );
-      await con.query(
-        `INSERT INTO playlist (${columnList.join(",")}) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE ${updateColumnList.join(",")}`,
-        [
-          Youtube.getPlaylistIdFromPlaylistApiData(playlistApiData),
-          Youtube.getTitleFromPlaylistApiData(playlistApiData),
-          playlistApiData.snippet.channelId
-        ]
-      )
-    })
-  }))
-
-
-  const channelApiDataList = await yt.getChannels(idList);
-  await Promise.all(channelApiDataList.map(async (channelApiData) => {
-    const columns = [
-      "title",
-      "thumbnail",
-      "banner",
-      "publishedAt",
-      "viewCount",
-      "subscriberCount",
-    ];
-    const updateColumns = columns.map(
-      (column) => `${column}=values(${column})`
-    );
-
-    await con.query(
-      `INSERT INTO channel (id, ${columns.join(
-        ","
-      )}) VALUES (?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE ${updateColumns}`,
-      [
-        Youtube.getChannelIdFromChannelApiData(channelApiData),
-        Youtube.getTitleFromChannelApiData(channelApiData),
-        Youtube.getThumbnailFromChannelApiData(channelApiData),
-        Youtube.getBannerFromChannelApiData(channelApiData),
-        Youtube.getPublishedAtFromChannelApiData(channelApiData),
-        Youtube.getViewCountFromChannelApiData(channelApiData),
-        Youtube.getSubscriberCountFromChannelApiData(channelApiData),
-      ]
-    );
-  }));
-
-  // console.log(await con.query("select * from channel"))
+  // channel id -> upload playlist id -> video id
+  let allIdList = [];
+  allIdList.push(idList);
 
   await Promise.all(
     idList.map(async (channelId) => {
@@ -80,12 +33,7 @@ const yt = new Youtube(process.env.YOUTUBE_API_KEY);
       await Promise.all(
         videoApiDataList.map(async (videoApiData) => {
           const description = Youtube.getDescriptioFromVideoApiData(videoApiData);
-          const otherChannelIdList = Youtube.searchChannelIdFromText(description);
-          if (otherChannelIdList.length > 0) {
-              console.log(otherChannelIdList);
-              const insertChannelIdList = otherChannelIdList.map(id => [id]);
-              await con.query("INSERT IGNORE INTO channel (id) VALUES ?", [insertChannelIdList]);
-          }
+          allIdList.push(Youtube.searchChannelIdFromText(description));
 
           const id = Youtube.getVideoIdFromVideoApiData(videoApiData);
           const channelId = Youtube.getChannelIdFromVideoApiData(videoApiData);
@@ -128,6 +76,58 @@ const yt = new Youtube(process.env.YOUTUBE_API_KEY);
       );
     })
   );
+
+  await Promise.all(idList.map(async id => {
+    const playlistApiDataList = await yt.getPlaylists(id);
+    playlistApiDataList.map(async playlistApiData => {
+      const columnList = ["id", "title", "channelId"]
+      const updateColumnList = columnList.map(
+        (column) => `${column}=values(${column})`
+      );
+      await con.query(
+        `INSERT INTO playlist (${columnList.join(",")}) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE ${updateColumnList.join(",")}`,
+        [
+          Youtube.getPlaylistIdFromPlaylistApiData(playlistApiData),
+          Youtube.getTitleFromPlaylistApiData(playlistApiData),
+          playlistApiData.snippet.channelId
+        ]
+      )
+    })
+  }))
+
+  let flatAllIdList = removeDuplicatesFromArray(allIdList.flat())
+  const channelApiDataList = await yt.getChannels(flatAllIdList);
+  await Promise.all(channelApiDataList.map(async (channelApiData) => {
+    const columns = [
+      "title",
+      "thumbnail",
+      "banner",
+      "publishedAt",
+      "viewCount",
+      "subscriberCount",
+    ];
+    const updateColumns = columns.map(
+      (column) => `${column}=values(${column})`
+    );
+
+    await con.query(
+      `INSERT INTO channel (id, ${columns.join(
+        ","
+      )}) VALUES (?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE ${updateColumns}`,
+      [
+        Youtube.getChannelIdFromChannelApiData(channelApiData),
+        Youtube.getTitleFromChannelApiData(channelApiData),
+        Youtube.getThumbnailFromChannelApiData(channelApiData),
+        Youtube.getBannerFromChannelApiData(channelApiData),
+        Youtube.getPublishedAtFromChannelApiData(channelApiData),
+        Youtube.getViewCountFromChannelApiData(channelApiData),
+        Youtube.getSubscriberCountFromChannelApiData(channelApiData),
+      ]
+    );
+  }));
+
+  // console.log(await con.query("select * from channel"))
+
 
   await con.end();
 })();
