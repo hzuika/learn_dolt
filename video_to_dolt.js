@@ -18,85 +18,8 @@ const yt = new Youtube(process.env.YOUTUBE_API_KEY);
     (data) => data.id
   );
 
-  // channel id -> upload playlist id -> video id
-  let allIdList = [];
-  allIdList.push(idList);
-
-  await Promise.all(
-    idList.map(async (channelId) => {
-      const playlistId = Youtube.getUploadPlaylistIdFromChannelId(channelId);
-      const playlistItemApiDataList = await yt.getPlaylistItems(playlistId);
-      const videoIdList = playlistItemApiDataList.map((playlistItemApiData) => {
-        return Youtube.getVideoIdFromPlaylistItemApiData(playlistItemApiData);
-      });
-      const videoApiDataList = await yt.getVideos(videoIdList);
-      await Promise.all(
-        videoApiDataList.map(async (videoApiData) => {
-          const description = Youtube.getDescriptioFromVideoApiData(videoApiData);
-          allIdList.push(Youtube.searchChannelIdFromText(description));
-
-          const id = Youtube.getVideoIdFromVideoApiData(videoApiData);
-          const channelId = Youtube.getChannelIdFromVideoApiData(videoApiData);
-          const title = Youtube.getTitleFromVideoApiData(videoApiData);
-          const viewCount = Youtube.getViewCountFromVideoApiData(videoApiData);
-          const likeCount = Youtube.getLikeCountFromVideoApiData(videoApiData);
-          const publishedAt =
-            Youtube.getPublishedAtFromVideoApiData(videoApiData);
-          const startTime = Youtube.getStartTimeFromVideoApiData(videoApiData);
-          const endTime = Youtube.getEndTimeFromVideoApiData(videoApiData);
-          const columns = [
-            "title",
-            "viewCount",
-            "likeCount",
-            "publishedAt",
-            "startTime",
-            "endTime",
-          ];
-          const updateColumns = columns.map(
-            (column) => `${column}=values(${column})`
-          );
-          await con.query(
-            `INSERT INTO video (id, channelId, ${columns.join(
-              ","
-            )}) VALUES (?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE ${updateColumns.join(
-              ","
-            )}`,
-            [
-              id,
-              channelId,
-              title,
-              viewCount,
-              likeCount,
-              publishedAt,
-              startTime,
-              endTime,
-            ]
-          );
-        })
-      );
-    })
-  );
-
-  await Promise.all(idList.map(async id => {
-    const playlistApiDataList = await yt.getPlaylists(id);
-    playlistApiDataList.map(async playlistApiData => {
-      const columnList = ["id", "title", "channelId"]
-      const updateColumnList = columnList.map(
-        (column) => `${column}=values(${column})`
-      );
-      await con.query(
-        `INSERT INTO playlist (${columnList.join(",")}) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE ${updateColumnList.join(",")}`,
-        [
-          Youtube.getPlaylistIdFromPlaylistApiData(playlistApiData),
-          Youtube.getTitleFromPlaylistApiData(playlistApiData),
-          playlistApiData.snippet.channelId
-        ]
-      )
-    })
-  }))
-
-  let flatAllIdList = removeDuplicatesFromArray(allIdList.flat())
-  const channelApiDataList = await yt.getChannels(flatAllIdList);
+const updateChannel = async (channelIdList) => {
+  const channelApiDataList = await yt.getChannels(channelIdList);
   await Promise.all(channelApiDataList.map(async (channelApiData) => {
     const columns = [
       "title",
@@ -105,6 +28,7 @@ const yt = new Youtube(process.env.YOUTUBE_API_KEY);
       "publishedAt",
       "viewCount",
       "subscriberCount",
+      "videoCount"
     ];
     const updateColumns = columns.map(
       (column) => `${column}=values(${column})`
@@ -113,7 +37,7 @@ const yt = new Youtube(process.env.YOUTUBE_API_KEY);
     await con.query(
       `INSERT INTO channel (id, ${columns.join(
         ","
-      )}) VALUES (?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE ${updateColumns}`,
+      )}) VALUES (?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE ${updateColumns}`,
       [
         Youtube.getChannelIdFromChannelApiData(channelApiData),
         Youtube.getTitleFromChannelApiData(channelApiData),
@@ -122,9 +46,91 @@ const yt = new Youtube(process.env.YOUTUBE_API_KEY);
         Youtube.getPublishedAtFromChannelApiData(channelApiData),
         Youtube.getViewCountFromChannelApiData(channelApiData),
         Youtube.getSubscriberCountFromChannelApiData(channelApiData),
+        Youtube.getVideoCountFromChannelApiData(channelApiData)
       ]
     );
   }));
+}
+
+  await updateChannel(idList)
+
+  // channel id -> upload playlist id -> video id
+  // let allIdList = [];
+
+  // await Promise.all(
+  //   idList.map(async (channelId) => {
+  //     const playlistId = Youtube.getUploadPlaylistIdFromChannelId(channelId);
+  //     const playlistItemApiDataList = await yt.getPlaylistItems(playlistId);
+  //     const videoIdList = playlistItemApiDataList.map((playlistItemApiData) => {
+  //       return Youtube.getVideoIdFromPlaylistItemApiData(playlistItemApiData);
+  //     });
+  //     const videoApiDataList = await yt.getVideos(videoIdList);
+  //     await Promise.all(
+  //       videoApiDataList.map(async (videoApiData) => {
+  //         const description = Youtube.getDescriptioFromVideoApiData(videoApiData);
+  //         allIdList.push(Youtube.searchChannelIdFromText(description));
+
+  //         const id = Youtube.getVideoIdFromVideoApiData(videoApiData);
+  //         const channelId = Youtube.getChannelIdFromVideoApiData(videoApiData);
+  //         const title = Youtube.getTitleFromVideoApiData(videoApiData);
+  //         const viewCount = Youtube.getViewCountFromVideoApiData(videoApiData);
+  //         const likeCount = Youtube.getLikeCountFromVideoApiData(videoApiData);
+  //         const publishedAt =
+  //           Youtube.getPublishedAtFromVideoApiData(videoApiData);
+  //         const startTime = Youtube.getStartTimeFromVideoApiData(videoApiData);
+  //         const endTime = Youtube.getEndTimeFromVideoApiData(videoApiData);
+  //         const columns = [
+  //           "title",
+  //           "viewCount",
+  //           "likeCount",
+  //           "publishedAt",
+  //           "startTime",
+  //           "endTime",
+  //         ];
+  //         const updateColumns = columns.map(
+  //           (column) => `${column}=values(${column})`
+  //         );
+  //         await con.query(
+  //           `INSERT INTO video (id, channelId, ${columns.join(
+  //             ","
+  //           )}) VALUES (?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE ${updateColumns.join(
+  //             ","
+  //           )}`,
+  //           [
+  //             id,
+  //             channelId,
+  //             title,
+  //             viewCount,
+  //             likeCount,
+  //             publishedAt,
+  //             startTime,
+  //             endTime,
+  //           ]
+  //         );
+  //       })
+  //     );
+  //   })
+  // );
+
+  // await Promise.all(idList.map(async id => {
+  //   const playlistApiDataList = await yt.getPlaylists(id);
+  //   playlistApiDataList.map(async playlistApiData => {
+  //     const columnList = ["id", "title", "channelId"]
+  //     const updateColumnList = columnList.map(
+  //       (column) => `${column}=values(${column})`
+  //     );
+  //     await con.query(
+  //       `INSERT INTO playlist (${columnList.join(",")}) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE ${updateColumnList.join(",")}`,
+  //       [
+  //         Youtube.getPlaylistIdFromPlaylistApiData(playlistApiData),
+  //         Youtube.getTitleFromPlaylistApiData(playlistApiData),
+  //         playlistApiData.snippet.channelId
+  //       ]
+  //     )
+  //   })
+  // }))
+
+  // let flatAllIdList = removeDuplicatesFromArray(allIdList.flat())
 
   // console.log(await con.query("select * from channel"))
 
