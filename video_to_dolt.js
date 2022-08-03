@@ -17,7 +17,7 @@ const yt = new Youtube(process.env.YOUTUBE_API_KEY);
   );
 
   const dbDataList = (
-    await con.query("SELECT (id, videoCount) FROM channel")
+    await con.query("SELECT id, videoCount FROM channel")
   )[0];
   const idList = dbDataList.map((data) => data.id);
 
